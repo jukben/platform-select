@@ -1,8 +1,15 @@
 {
   "name": "platform-select",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "main": "index.js",
   "license": "MIT",
+  "author": "Jakub Benes <jukben@gmail.com>",
+  "scripts": {
+    "test": "jest"
+  },
+  "engines": {
+    "node": ">=7.5.0"
+  },
   "devDependencies": {
     "jest": "^22.4.3"
   }

@@ -2,7 +2,17 @@
 
 This little library allows you to define precedence which function evaluate based on the platform.
 
-[Currently possible values are](https://nodejs.org/api/process.html#process_process_platform):
+## Usage
+
+```js
+select({
+  [platform: string]: Function
+},
+  [platform: string]: Function
+}, ...)
+```
+
+Currently, possible "Platform" values are ([defined by Node](https://nodejs.org/api/process.html#process_process_platform)):
 
 * 'aix'
 * 'darwin'
@@ -18,11 +28,14 @@ The function returns whatever returns the provided function otherwise throw an e
 
 The function could also throw an error `Function for current platform ("darwin") is not defined!` when you omit specifics platform definition.
 
+## Example
+
 ```js
+const select = require("platform-select");
 const open = app => opn("https://google.com", { app });
 
 try {
-  pick(
+  select(
     {
       darwin: open("google chrome"),
       win32: open("chrome"),

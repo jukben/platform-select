@@ -34,21 +34,21 @@ The function could also throw an error `Function for current platform ("darwin")
 const select = require("platform-select");
 const open = app => opn("https://google.com", { app });
 
-try {
-  const returnedValue = select(
-    {
-      darwin: open("google chrome"),
-      win32: open("chrome"),
-      // on other platforms than Windows or Mac try to open...
-      _: open("google-chrome")
-    },
-    {
-      // if attempt to run Google Chrome was unsuccessful, let's run Safari...
-      darwin: open("safari")
-    }
-  );
-} catch (e) {
+select(
+  {
+    darwin: open("google chrome"),
+    win32: open("chrome"),
+    // on other platforms than Windows or Mac try to open...
+    _: open("google-chrome")
+  },
+  {
+    // if attempt to run Google Chrome was unsuccessful, let's run Safari...
+    darwin: open("safari")
+  }
+).catch(e => {
   // when user is on Darwin and doesn't have Google Chrome or Safari (probably impossible :))
-  console.log("Unable to run");
-}
+  console.error("Unable to run!", e);
+}).then(e => {
+  console.log("Returned value from 'open' function: ", e)  
+};
 ```

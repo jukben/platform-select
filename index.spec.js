@@ -1,6 +1,52 @@
 const testCommand = require("./test-utils/command");
 const pick = require("./index");
 
+describe("async macOS", () => {
+  beforeAll(() => {
+    Object.defineProperty(process, "platform", { value: "darwin" });
+  });
+
+  beforeEach(() => {
+    testCommand.__shouldFail = [];
+  });
+
+  it("should follow the path", () => {
+    testCommand.__shouldFail = ["a", "b"];
+
+    expect(
+      pick(
+        {
+          darwin: testCommand.runAsync("a")
+        },
+        {
+          darwin: testCommand.runAsync("b")
+        },
+        {
+          darwin: testCommand.runAsync("c")
+        }
+      )
+    ).resolves.toBe("c");
+  });
+
+  it("should fail the path", () => {
+    testCommand.__shouldFail = ["a", "b", "c"];
+
+    expect(
+      pick(
+        {
+          darwin: testCommand.runAsync("a")
+        },
+        {
+          darwin: testCommand.runAsync("b")
+        },
+        {
+          darwin: testCommand.runAsync("c")
+        }
+      )
+    ).rejects.toThrowError(/No suitable job for "darwin"/);
+  });
+});
+
 describe("macOS", () => {
   beforeAll(() => {
     Object.defineProperty(process, "platform", { value: "darwin" });
@@ -26,7 +72,7 @@ describe("macOS", () => {
           _: testCommand.run("google-chrome-canary")
         }
       )
-    ).toBe("google chrome canary");
+    ).resolves.toBe("google chrome canary");
   });
 
   it("should follow the path, pick 2nt from default value", () => {
@@ -44,7 +90,7 @@ describe("macOS", () => {
           _: testCommand.run("google-chrome-canary")
         }
       )
-    ).toBe("google-chrome-canary");
+    ).resolves.toBe("google-chrome-canary");
   });
 
   it("should follow the path, pick 1st", () => {
@@ -61,13 +107,13 @@ describe("macOS", () => {
           win32: testCommand.run("chrome canary")
         }
       )
-    ).toBe("google chrome");
+    ).resolves.toBe("google chrome");
   });
 
   it("should follow the path, should throw error", () => {
     testCommand.__shouldFail = ["google chrome", "google chrome canary"];
 
-    expect(() =>
+    expect(
       pick(
         {
           darwin: testCommand.run("google chrome"),
@@ -80,7 +126,7 @@ describe("macOS", () => {
           win32: testCommand.run("chrome canary")
         }
       )
-    ).toThrowError(/No suitable job for "darwin"/);
+    ).rejects.toThrowError(/No suitable job for "darwin"/);
   });
 });
 
@@ -109,7 +155,7 @@ describe("win32", () => {
           _: testCommand.run("google-chrome-canary")
         }
       )
-    ).toBe("chrome canary");
+    ).resolves.toBe("chrome canary");
   });
 
   it("should follow the path, pick 1st", () => {
@@ -126,13 +172,13 @@ describe("win32", () => {
           win32: testCommand.run("chrome canary")
         }
       )
-    ).toBe("chrome");
+    ).resolves.toBe("chrome");
   });
 
   it("should follow the path, should throw error", () => {
     testCommand.__shouldFail = ["chrome", "chrome canary"];
 
-    expect(() =>
+    expect(
       pick(
         {
           darwin: testCommand.run("google chrome"),
@@ -145,7 +191,7 @@ describe("win32", () => {
           win32: testCommand.run("chrome canary")
         }
       )
-    ).toThrowError(/No suitable job for "win32"/);
+    ).rejects.toThrowError(/No suitable job for "win32"/);
   });
 });
 
@@ -176,7 +222,7 @@ describe("linux", () => {
           _: testCommand.run("google-chrome-canary")
         }
       )
-    ).toBe("google-linux-canary");
+    ).resolves.toBe("google-linux-canary");
   });
 
   it("should follow the path, pick 1st", () => {
@@ -193,13 +239,13 @@ describe("linux", () => {
           win32: testCommand.run("chrome canary")
         }
       )
-    ).toBe("google-chrome");
+    ).resolves.toBe("google-chrome");
   });
 
   it("should follow the path, should throw error", () => {
     testCommand.__shouldFail = ["google-chrome"];
 
-    expect(() =>
+    expect(
       pick(
         {
           darwin: testCommand.run("google chrome"),
@@ -211,10 +257,12 @@ describe("linux", () => {
           win32: testCommand.run("chrome canary")
         }
       )
-    ).toThrowError(/No suitable job for "linux"/);
+    ).rejects.toThrowError(
+      'Function for current platform ("linux") is not defined!'
+    );
   });
 
-  it("should follow the path, should throw error", () => {
+  it("should follow the path, pick 2th", () => {
     testCommand.__shouldFail = ["google-chrome"];
 
     expect(
@@ -230,6 +278,6 @@ describe("linux", () => {
           win32: testCommand.run("chrome canary")
         }
       )
-    ).toBe("google-chrome-canary");
+    ).resolves.toBe("google-chrome-canary");
   });
 });

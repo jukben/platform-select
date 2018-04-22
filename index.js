@@ -14,20 +14,37 @@ function getTask(step) {
 
 function pick(...procedure) {
   const platform = process.platform;
-  let returnValue;
-  let step;
 
-  while ((step = procedure.shift())) {
-    try {
-      returnValue = getTask(step)();
-    } catch (e) {
-      continue;
+  const getNextProcedure = () => {
+    const step = procedure.shift();
+
+    if (!step) {
+      throw new Error(`No suitable job for "${platform}"`);
     }
 
-    return returnValue;
-  }
+    const job = getTask(step);
 
-  throw new Error(`No suitable job for "${platform}"`);
+    if (typeof job !== "function") {
+      throw new Error(
+        "Job has to be a function which returns value or Promise"
+      );
+    }
+
+    let task;
+    try {
+      task = job();
+    } catch (e) {
+      task = Promise.reject(e);
+    }
+
+    if (!(task instanceof Promise)) {
+      task = Promise.resolve(task);
+    }
+
+    return task.catch(e => getNextProcedure());
+  };
+
+  return getNextProcedure();
 }
 
 module.exports = pick;

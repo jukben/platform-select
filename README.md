@@ -9,7 +9,7 @@ select({
   [platform: string]: Function
 },
   [platform: string]: Function
-}, ...)
+}, ...): Promise
 ```
 
 Currently, possible "Platform" values are ([defined by Node](https://nodejs.org/api/process.html#process_process_platform)):
@@ -24,7 +24,7 @@ Currently, possible "Platform" values are ([defined by Node](https://nodejs.org/
 
 You can use `_` as fallback for _undefined_ platform.
 
-The function returns whatever returns the provided function otherwise throw an error in format `No suitable job for "darwin"`
+The function returns Promise of value which is provided by function which win the selection, otherwise, throw an error in format `No suitable job for "darwin"`
 
 The function could also throw an error `Function for current platform ("darwin") is not defined!` when you omit specifics platform definition.
 
@@ -35,7 +35,7 @@ const select = require("platform-select");
 const open = app => opn("https://google.com", { app });
 
 try {
-  select(
+  const returnedValue = select(
     {
       darwin: open("google chrome"),
       win32: open("chrome"),

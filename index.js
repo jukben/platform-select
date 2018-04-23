@@ -19,14 +19,14 @@ function pick(...procedure) {
     const step = procedure.shift();
 
     if (!step) {
-      throw new Error(`No suitable job for "${platform}"`);
+      return Promise.reject(new Error(`No suitable job for "${platform}"`));
     }
 
     const job = getTask(step);
 
     if (typeof job !== "function") {
-      throw new Error(
-        "Job has to be a function which returns value or Promise"
+      return Promise.reject(
+        new Error("Job has to be a function which returns value or Promise")
       );
     }
 

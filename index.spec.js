@@ -10,6 +10,55 @@ describe("async macOS", () => {
     testCommand.__shouldFail = [];
   });
 
+  it("should fail because unexpected job", () => {
+    const badExample = a => a;
+    const goodExample = a => () => a;
+
+    expect(pick()).rejects.toThrow(/No suitable job for/);
+  });
+
+  it("should fail because unexpected job", () => {
+    const badExample = a => a;
+    const goodExample = a => () => a;
+
+    expect(
+      pick(
+        {
+          darwin: badExample("a")
+        },
+        {
+          darwin: goodExample("b")
+        },
+        {
+          darwin: testCommand.runAsync("c")
+        }
+      )
+    ).rejects.toThrow(
+      /Job has to be a function which returns value or Promise/
+    );
+  });
+
+  it("should fail because unexpected job", () => {
+    testCommand.__shouldFail = ["a"];
+    const badExample = a => a;
+
+    expect(
+      pick(
+        {
+          darwin: testCommand.runAsync("a")
+        },
+        {
+          darwin: badExample("b")
+        },
+        {
+          darwin: testCommand.runAsync("c")
+        }
+      )
+    ).rejects.toThrow(
+      /Job has to be a function which returns value or Promise/
+    );
+  });
+
   it("should follow the path", () => {
     testCommand.__shouldFail = ["a", "b"];
 
@@ -43,7 +92,7 @@ describe("async macOS", () => {
           darwin: testCommand.runAsync("c")
         }
       )
-    ).rejects.toThrowError(/No suitable job for "darwin"/);
+    ).rejects.toThrow(/No suitable job for "darwin"/);
   });
 });
 
@@ -126,7 +175,7 @@ describe("macOS", () => {
           win32: testCommand.run("chrome canary")
         }
       )
-    ).rejects.toThrowError(/No suitable job for "darwin"/);
+    ).rejects.toThrow(/No suitable job for "darwin"/);
   });
 });
 
@@ -191,7 +240,7 @@ describe("win32", () => {
           win32: testCommand.run("chrome canary")
         }
       )
-    ).rejects.toThrowError(/No suitable job for "win32"/);
+    ).rejects.toThrow(/No suitable job for "win32"/);
   });
 });
 
@@ -257,7 +306,7 @@ describe("linux", () => {
           win32: testCommand.run("chrome canary")
         }
       )
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       'Function for current platform ("linux") is not defined!'
     );
   });

@@ -32,7 +32,7 @@ The function could also throw an error `Function for current platform ("darwin")
 
 ```js
 const select = require("platform-select");
-const open = app => opn("https://google.com", { app });
+const open = app => () => opn("https://google.com", { app });
 
 select(
   {

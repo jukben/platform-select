@@ -10,14 +10,18 @@ describe("async macOS", () => {
     testCommand.__shouldFail = [];
   });
 
-  it("should fail because unexpected job", () => {
+  it("should fail because unexpected job, wrong key", () => {
     const badExample = a => a;
     const goodExample = a => () => a;
 
-    expect(pick()).rejects.toThrow(/No suitable job for/);
+    expect(
+      pick({
+        wrong: badExample("a")
+      })
+    ).rejects.toThrow(/Task should be defined as object with keys/);
   });
 
-  it("should fail because unexpected job", () => {
+  it("should fail because unexpected job, wrong value", () => {
     const badExample = a => a;
     const goodExample = a => () => a;
 
@@ -38,7 +42,7 @@ describe("async macOS", () => {
     );
   });
 
-  it("should fail because unexpected job", () => {
+  it("should fail because unexpected job, wrong value, reorder", () => {
     testCommand.__shouldFail = ["a"];
     const badExample = a => a;
 

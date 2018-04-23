@@ -1,6 +1,17 @@
-function getTask(step) {
-  const platform = process.platform;
+// https://nodejs.org/api/process.html#process_process_platform
+const PLATFORMS = [
+  "aix",
+  "darwin",
+  "linux",
+  "freebsd",
+  "openbsd",
+  "sunos",
+  "win32",
+  "android",
+  "_"
+];
 
+function getTask(step, platform) {
   if (step[platform]) {
     return step[platform];
   } else if (step["_"]) {
@@ -22,7 +33,15 @@ function pick(...procedure) {
       return Promise.reject(new Error(`No suitable job for "${platform}"`));
     }
 
-    const job = getTask(step);
+    if (!Object.keys(step).every(a => PLATFORMS.includes(a))) {
+      return Promise.reject(
+        new Error(
+          `Task should be defined as object with keys: ${PLATFORMS.join(", ")}`
+        )
+      );
+    }
+
+    const job = getTask(step, platform);
 
     if (typeof job !== "function") {
       return Promise.reject(

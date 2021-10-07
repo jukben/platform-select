@@ -7,6 +7,10 @@
   "scripts": {
     "test": "jest"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jukben/platform-select.git",
+  },
   "engines": {
     "node": ">=7.5.0"
   },
